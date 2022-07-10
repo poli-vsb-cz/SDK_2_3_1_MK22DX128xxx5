@@ -36,6 +36,7 @@
 #define _BOARD_H_
 
 #include "clock_config.h"
+#include "pin_mux.h"
 #include "fsl_gpio.h"
 
 /*******************************************************************************
@@ -57,96 +58,30 @@
 #define BOARD_DEBUG_UART_BAUDRATE 115200
 #endif /* BOARD_DEBUG_UART_BAUDRATE */
 
-/* Board led color mapping */
-#define LOGIC_LED_ON 0U
-#define LOGIC_LED_OFF 1U
-#ifndef BOARD_LED_RED_GPIO
-#define BOARD_LED_RED_GPIO GPIOB
-#endif
-#define BOARD_LED_RED_GPIO_PORT PORTB
-#ifndef BOARD_LED_RED_GPIO_PIN
-#define BOARD_LED_RED_GPIO_PIN 22U
-#endif
-#ifndef BOARD_LED_GREEN_GPIO
-#define BOARD_LED_GREEN_GPIO GPIOE
-#endif
-#define BOARD_LED_GREEN_GPIO_PORT PORTE
-#ifndef BOARD_LED_GREEN_GPIO_PIN
-#define BOARD_LED_GREEN_GPIO_PIN 26U
-#endif
-#ifndef BOARD_LED_BLUE_GPIO
-#define BOARD_LED_BLUE_GPIO GPIOB
-#endif
-#define BOARD_LED_BLUE_GPIO_PORT PORTB
-#ifndef BOARD_LED_BLUE_GPIO_PIN
-#define BOARD_LED_BLUE_GPIO_PIN 21U
-#endif
+#define LOGIC_LED_PTD5_ON	1U
+#define LOGIC_LED_PTD5_OFF	0U
 
-#define LED_RED_INIT(output)                                                 \
-    GPIO_PinWrite(BOARD_LED_RED_GPIO, BOARD_LED_RED_GPIO_PIN, output); \
-    BOARD_LED_RED_GPIO->PDDR |= (1U << BOARD_LED_RED_GPIO_PIN) /*!< Enable target LED_RED */
-#define LED_RED_ON() \
-    GPIO_PortClear(BOARD_LED_RED_GPIO, 1U << BOARD_LED_RED_GPIO_PIN) /*!< Turn on target LED_RED */
-#define LED_RED_OFF() \
-    GPIO_PortSet(BOARD_LED_RED_GPIO, 1U << BOARD_LED_RED_GPIO_PIN) /*!< Turn off target LED_RED */
-#define LED_RED_TOGGLE() \
-    GPIO_PortToggle(BOARD_LED_RED_GPIO, 1U << BOARD_LED_RED_GPIO_PIN) /*!< Toggle on target LED_RED */
+#define LED_PTD5_ON() \
+    GPIO_PinWrite(BOARD_LED_PTD5_GPIO, BOARD_LED_PTD5_PIN, LOGIC_LED_PTD5_ON) /*!< Turn on target LED_PTD5 */
+#define LED_PTD5_OFF() \
+    GPIO_PinWrite(BOARD_LED_PTD5_GPIO, BOARD_LED_PTD5_GPIO_PIN, LOGIC_LED_PTD5_OFF) /*!< Turn off target LED_PTD5 */
+#define LED_PTD5_TOGGLE() \
+    GPIO_PortToggle(BOARD_LED_PTD5_GPIO, BOARD_LED_PTD5_GPIO_PIN_MASK) /*!< Toggle on target LED_PTD5 */
 
-#define LED_GREEN_INIT(output)                                                   \
-    GPIO_PinWrite(BOARD_LED_GREEN_GPIO, BOARD_LED_GREEN_GPIO_PIN, output); \
-    BOARD_LED_GREEN_GPIO->PDDR |= (1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Enable target LED_GREEN */
-#define LED_GREEN_ON() \
-    GPIO_PortClear(BOARD_LED_GREEN_GPIO, 1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Turn on target LED_GREEN */
-#define LED_GREEN_OFF() \
-    GPIO_PortSet(BOARD_LED_GREEN_GPIO, 1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Turn off target LED_GREEN */
-#define LED_GREEN_TOGGLE() \
-    GPIO_PortToggle(BOARD_LED_GREEN_GPIO, 1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Toggle on target LED_GREEN */
+#define SWITCH_PTD4_READ() \
+	GPIO_PinRead( BOARD_SWITCH_PTD4_GPIO, BOARD_SWITCH_PTD4_PIN ) /*!< Get switch state */
 
-#define LED_BLUE_INIT(output)                                                  \
-    GPIO_PinWrite(BOARD_LED_BLUE_GPIO, BOARD_LED_BLUE_GPIO_PIN, output); \
-    BOARD_LED_BLUE_GPIO->PDDR |= (1U << BOARD_LED_BLUE_GPIO_PIN) /*!< Enable target LED_BLUE */
-#define LED_BLUE_ON() \
-    GPIO_PortClear(BOARD_LED_BLUE_GPIO, 1U << BOARD_LED_BLUE_GPIO_PIN) /*!< Turn on target LED_BLUE */
-#define LED_BLUE_OFF() \
-    GPIO_PortSet(BOARD_LED_BLUE_GPIO, 1U << BOARD_LED_BLUE_GPIO_PIN) /*!< Turn off target LED_BLUE */
-#define LED_BLUE_TOGGLE() \
-    GPIO_PortToggle(BOARD_LED_BLUE_GPIO, 1U << BOARD_LED_BLUE_GPIO_PIN) /*!< Toggle on target LED_BLUE */
+/* demo while for main (who knows where is template for main :-( )
+     while(1) {
+        if ( SWITCH_PTD4_READ() == 1U )
+        	LED_PTD5_TOGGLE();
+        else
+        	LED_PTD5_ON();
 
-/* The SDHC instance/channel used for board */
-#define BOARD_SDHC_CD_GPIO_IRQ_HANDLER PORTB_IRQHandler
-
-/* SDHC base address, clock and card detection pin */
-#define BOARD_SDHC_BASEADDR SDHC
-#define BOARD_SDHC_CLKSRC kCLOCK_CoreSysClk
-#define BOARD_SDHC_CLK_FREQ CLOCK_GetFreq(kCLOCK_CoreSysClk)
-#define BOARD_SDHC_IRQ SDHC_IRQn
-#define BOARD_SDHC_CD_GPIO_BASE GPIOE
-#ifndef BOARD_SDHC_CD_GPIO_PIN
-#define BOARD_SDHC_CD_GPIO_PIN 6U
-#endif
-#define BOARD_SDHC_CD_PORT_BASE PORTE
-#define BOARD_SDHC_CD_PORT_IRQ PORTE_IRQn
-#define BOARD_SDHC_CD_PORT_IRQ_HANDLER PORTE_IRQHandler
-#define BOARD_SDHC_CD_LOGIC_RISING
-
-#define BOARD_ACCEL_I2C_BASEADDR I2C0
-
-/* ERPC DSPI configuration */
-#define ERPC_BOARD_DSPI_BASEADDR SPI0
-#define ERPC_BOARD_DSPI_BAUDRATE 500000U
-#define ERPC_BOARD_DSPI_CLKSRC DSPI0_CLK_SRC
-#define ERPC_BOARD_DSPI_CLK_FREQ CLOCK_GetFreq(DSPI0_CLK_SRC)
-#define ERPC_BOARD_DSPI_INT_GPIO GPIOB
-#define ERPC_BOARD_DSPI_INT_PORT PORTB
-#define ERPC_BOARD_DSPI_INT_PIN 2U
-#define ERPC_BOARD_DSPI_INT_PIN_IRQ PORTB_IRQn
-#define ERPC_BOARD_DSPI_INT_PIN_IRQ_HANDLER PORTB_IRQHandler
-
-/* DAC base address */
-#define BOARD_DAC_BASEADDR DAC0
-
-/* Board accelerometer driver */
-#define BOARD_ACCEL_FXOS
+        for ( i = 0; i < 500000; i++ )
+        	__asm volatile ("nop");
+    }
+ */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -162,3 +97,4 @@ void BOARD_InitDebugConsole(void);
 #endif /* __cplusplus */
 
 #endif /* _BOARD_H_ */
+
